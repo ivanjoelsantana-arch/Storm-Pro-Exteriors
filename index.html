@@ -1164,13 +1164,17 @@ document.getElementById('yr').textContent = new Date().getFullYear();
     requestAnimationFrame(frame);
   }
 
-  view.addEventListener('mouseenter',function(){paused=true;});
-  view.addEventListener('mouseleave',function(){paused=false;});
+  // Pause on hover, but only for a real mouse. A touch tap synthesises mouseenter and
+  // never fires a matching mouseleave, which used to leave the track paused forever.
+  var hovering=false;
+  view.addEventListener('pointerenter',function(e){ if(e.pointerType==='mouse'){hovering=true;paused=true;} });
+  view.addEventListener('pointerleave',function(e){ if(e.pointerType==='mouse'){hovering=false;paused=false;} });
 
   track.addEventListener('pointerdown',function(e){
     dragging=true; moved=0; vel=0; lastPX=e.clientX; lastT=performance.now();
+    if(e.pointerType!=='mouse') paused=true;         // touch: hold to read, resume on release
     track.classList.add('grabbing');
-    track.setPointerCapture(e.pointerId);
+    try{track.setPointerCapture(e.pointerId);}catch(err){}
   });
   track.addEventListener('pointermove',function(e){
     if(!dragging)return;
@@ -1180,13 +1184,23 @@ document.getElementById('yr').textContent = new Date().getFullYear();
     lastPX=e.clientX; lastT=now;
   });
   function endDrag(e){
-    if(!dragging)return;
-    dragging=false; track.classList.remove('grabbing');
-    vel=Math.max(-26,Math.min(26,vel));
-    try{track.releasePointerCapture(e.pointerId);}catch(err){}
+    if(dragging){
+      dragging=false; track.classList.remove('grabbing');
+      vel=Math.max(-26,Math.min(26,vel));
+      if(e&&e.pointerId!=null){ try{track.releasePointerCapture(e.pointerId);}catch(err){} }
+    }
+    if(!hovering) paused=false;                      // any release resumes the drift
   }
   track.addEventListener('pointerup',endDrag);
   track.addEventListener('pointercancel',endDrag);
+  // Safety net: a release outside the track, a lost pointer, or leaving and returning
+  // to the tab must never strand the carousel in a paused or dragging state.
+  addEventListener('pointerup',endDrag);
+  addEventListener('pointercancel',endDrag);
+  addEventListener('blur',function(){ endDrag(); });
+  document.addEventListener('visibilitychange',function(){
+    if(!document.hidden){ dragging=false; if(!hovering) paused=false; }
+  });
   track.addEventListener('click',function(e){ if(moved>6){e.preventDefault();e.stopPropagation();} },true);
   track.addEventListener('dragstart',function(e){e.preventDefault();});
 
