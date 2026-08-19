@@ -12,7 +12,7 @@
 <meta property="og:description" content="Seamless eavestrough rolled on site to the exact inch of your roofline. Twelve years in Winnipeg and surrounding areas. Family run, fully insured, financing available.">
 <meta property="og:image" content="assets/hero.webp">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#0f1f1a">
+<meta name="theme-color" content="#0b2015">
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
@@ -50,21 +50,23 @@
    maroon #680830 -> oklch(0.339 0.129 3.9)     held in reserve, logo only
    ============================================================ */
 :root{
-  --bg:oklch(0.158 0.022 168);
-  --bg2:oklch(0.198 0.026 168);
-  --panel:oklch(0.232 0.028 168);
-  --ink:oklch(0.958 0.008 95);
-  --muted:oklch(0.718 0.018 168);
-  --line:oklch(0.315 0.022 168);
+  --bg:oklch(0.176 0.032 166);
+  --bg2:oklch(0.216 0.036 166);
+  --panel:oklch(0.254 0.039 166);
+  --ink:oklch(0.963 0.008 95);
+  --muted:oklch(0.742 0.023 166);
+  --line:oklch(0.342 0.034 166);
+  /* photo overlays use this, not --bg, so images never take a green cast */
+  --scrim:oklch(0.132 0.022 166);
   --accent:oklch(0.795 0.128 86);
   --accent-hi:oklch(0.868 0.112 90);
-  --on-accent:oklch(0.185 0.030 168);
-  --deep:oklch(0.300 0.062 170);
-  --green:oklch(0.386 0.071 172.7);
+  --on-accent:oklch(0.168 0.034 166);
+  --deep:oklch(0.374 0.090 164);
+  --green:oklch(0.454 0.098 164);
   --gold:oklch(0.805 0.152 84);
   --bone:oklch(0.950 0.009 105);
-  --bone-ink:oklch(0.205 0.030 168);
-  --bone-muted:oklch(0.445 0.022 168);
+  --bone-ink:oklch(0.196 0.036 166);
+  --bone-muted:oklch(0.452 0.028 166);
   --bone-line:oklch(0.865 0.012 105);
   --disp:'Fraunces',Georgia,serif;
   --sans:'Hanken Grotesk',system-ui,sans-serif;
@@ -78,10 +80,12 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-weight:3
 /* slow drifting mesh behind everything */
 body::before{content:"";position:fixed;inset:-20%;z-index:-2;pointer-events:none;
   background:
-    radial-gradient(38% 42% at 18% 12%,color-mix(in oklch,var(--deep) 70%,transparent),transparent 70%),
-    radial-gradient(34% 40% at 84% 30%,color-mix(in oklch,var(--green) 42%,transparent),transparent 72%),
-    radial-gradient(46% 44% at 62% 88%,color-mix(in oklch,var(--accent) 34%,transparent),transparent 70%);
-  filter:blur(60px);opacity:.42;animation:mesh 28s ease-in-out infinite}
+    radial-gradient(46% 50% at 14% 8%,color-mix(in oklch,var(--deep) 88%,transparent),transparent 70%),
+    radial-gradient(42% 48% at 88% 24%,color-mix(in oklch,var(--green) 62%,transparent),transparent 72%),
+    radial-gradient(54% 52% at 58% 84%,color-mix(in oklch,var(--deep) 74%,transparent),transparent 72%),
+    radial-gradient(30% 26% at 80% 58%,color-mix(in oklch,var(--accent) 22%,transparent),transparent 76%),
+    radial-gradient(34% 30% at 24% 62%,color-mix(in oklch,var(--green) 40%,transparent),transparent 74%);
+  filter:blur(72px);opacity:.62;animation:mesh 34s ease-in-out infinite}
 @keyframes mesh{0%,100%{transform:translate3d(0,0,0) scale(1)}33%{transform:translate3d(2.5%,-2%,0) scale(1.06)}66%{transform:translate3d(-2%,2.5%,0) scale(1.03)}}
 @media (prefers-reduced-motion:reduce){body::before{animation:none}}
 
@@ -168,17 +172,17 @@ nav.solid .brand img{height:44px}
 @media (prefers-reduced-motion:reduce){.hero-media img{animation:none}}
 .hero-media::after{content:"";position:absolute;inset:0;
   background:
-    linear-gradient(180deg,color-mix(in oklch,var(--bg) 34%,transparent) 0%,transparent 22%,transparent 46%,color-mix(in oklch,var(--bg) 34%,transparent) 74%,color-mix(in oklch,var(--bg) 86%,transparent) 93%,var(--bg) 100%),
-    linear-gradient(100deg,color-mix(in oklch,var(--bg) 68%,transparent) 0%,color-mix(in oklch,var(--bg) 22%,transparent) 44%,transparent 70%)}
+    linear-gradient(180deg,color-mix(in oklch,var(--scrim) 42%,transparent) 0%,transparent 22%,transparent 46%,color-mix(in oklch,var(--scrim) 46%,transparent) 74%,color-mix(in oklch,var(--bg) 84%,transparent) 94%,var(--bg) 100%),
+    linear-gradient(100deg,color-mix(in oklch,var(--scrim) 76%,transparent) 0%,color-mix(in oklch,var(--scrim) 26%,transparent) 44%,transparent 70%)}
 .hero-in::before{content:"";position:absolute;left:calc(var(--pad)*-1.6);bottom:-5%;width:min(1200px,116%);height:104%;z-index:-1;pointer-events:none;
-  background:radial-gradient(100% 96% at 2% 78%,color-mix(in oklch,var(--bg) 82%,transparent) 0%,color-mix(in oklch,var(--bg) 54%,transparent) 40%,color-mix(in oklch,var(--bg) 22%,transparent) 66%,transparent 84%);
+  background:radial-gradient(100% 96% at 2% 78%,color-mix(in oklch,var(--scrim) 86%,transparent) 0%,color-mix(in oklch,var(--scrim) 58%,transparent) 40%,color-mix(in oklch,var(--scrim) 24%,transparent) 66%,transparent 84%);
   filter:blur(30px)}
 .hero .eyebrow{color:oklch(0.945 0.062 92);font-weight:700;
-  text-shadow:0 1px 3px color-mix(in oklch,var(--bg) 84%,transparent),0 1px 14px color-mix(in oklch,var(--bg) 96%,transparent),0 0 36px color-mix(in oklch,var(--bg) 80%,transparent)}
-.hero .eyebrow::before{background:oklch(0.945 0.062 92);box-shadow:0 0 12px color-mix(in oklch,var(--bg) 70%,transparent)}
+  text-shadow:0 1px 3px color-mix(in oklch,var(--scrim) 88%,transparent),0 1px 14px color-mix(in oklch,var(--scrim) 96%,transparent),0 0 36px color-mix(in oklch,var(--scrim) 84%,transparent)}
+.hero .eyebrow::before{background:oklch(0.945 0.062 92);box-shadow:0 0 12px color-mix(in oklch,var(--scrim) 76%,transparent)}
 .hero-in{width:100%;padding-block:clamp(138px,16vh,168px) clamp(44px,7vh,64px);position:relative}
-.hero h1{text-shadow:0 2px 30px color-mix(in oklch,var(--bg) 88%,transparent),0 1px 5px color-mix(in oklch,var(--bg) 58%,transparent)}
-.hero .lede{color:color-mix(in oklch,var(--ink) 90%,var(--muted));text-shadow:0 1px 20px color-mix(in oklch,var(--bg) 92%,transparent),0 0 44px color-mix(in oklch,var(--bg) 66%,transparent)}
+.hero h1{text-shadow:0 2px 30px color-mix(in oklch,var(--scrim) 90%,transparent),0 1px 5px color-mix(in oklch,var(--scrim) 62%,transparent)}
+.hero .lede{color:color-mix(in oklch,var(--ink) 92%,var(--muted));text-shadow:0 1px 20px color-mix(in oklch,var(--scrim) 94%,transparent),0 0 44px color-mix(in oklch,var(--scrim) 70%,transparent)}
 .hero h1{font-size:clamp(2.4rem,5.6vw,4.9rem);margin:.26em 0 .34em;max-width:15ch}
 .hero .lede{max-width:52ch}
 .hero-actions{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-top:clamp(24px,3.4vh,34px)}
@@ -212,7 +216,7 @@ nav.solid .brand img{height:44px}
     radial-gradient(60% 46% at 70% 16%,color-mix(in oklch,oklch(0.86 0.095 88) 38%,transparent) 0%,transparent 72%),
     linear-gradient(180deg,transparent 34%,color-mix(in oklch,oklch(0.60 0.012 150) 36%,transparent) 66%,transparent 100%)}
   .hero-media::after{background:
-    linear-gradient(180deg,color-mix(in oklch,var(--bg) 56%,transparent) 0%,transparent 26%,transparent 62%,color-mix(in oklch,var(--bg) 62%,transparent) 88%,var(--bg) 100%)}
+    linear-gradient(180deg,color-mix(in oklch,var(--scrim) 60%,transparent) 0%,transparent 26%,transparent 60%,color-mix(in oklch,var(--scrim) 54%,transparent) 84%,var(--bg) 100%)}
   .hero-in::before{display:none}
   .hero h1,.hero .lede,.hero .eyebrow{text-shadow:none}
   .hero .lede{color:var(--muted)}
@@ -232,7 +236,7 @@ nav.solid .brand img{height:44px}
 .strip{border-block:1px solid color-mix(in oklch,var(--ink) 12%,transparent);
   background:color-mix(in oklch,var(--bg2) 70%,transparent);backdrop-filter:blur(6px)}
 .strip-in{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:color-mix(in oklch,var(--ink) 11%,transparent)}
-.strip-c{background:var(--bg);padding:32px clamp(16px,2.4vw,34px);text-align:center}
+.strip-c{background:linear-gradient(180deg,color-mix(in oklch,var(--bg2) 70%,transparent),color-mix(in oklch,var(--bg) 92%,transparent));padding:32px clamp(16px,2.4vw,34px);text-align:center}
 .strip-c b{display:block;font-family:var(--disp);font-size:clamp(1.24rem,2vw,1.75rem);font-weight:500;letter-spacing:-.02em;color:var(--ink)}
 .strip-c span{display:block;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:7px}
 .strip-c .stars{color:var(--gold);letter-spacing:.08em;font-size:1.1rem}
@@ -240,6 +244,13 @@ nav.solid .brand img{height:44px}
 
 /* ---------- generic section rhythm ---------- */
 .sec{padding-block:clamp(84px,11vw,168px)}
+/* depth: a soft top light and a settling floor inside each dark section */
+.sec:not(.light){isolation:isolate}
+/* the glow is transparent at the top and bottom edges, so two sections meeting
+   never produce a step. Depth stays inside the section, seams cannot form. */
+.sec:not(.light)::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(76% 44% at 50% 50%,color-mix(in oklch,var(--panel) 62%,transparent) 0%,color-mix(in oklch,var(--panel) 26%,transparent) 46%,transparent 76%)}
+.sec:not(.light)>*{position:relative;z-index:1}
 .sec-head{max-width:62ch}
 .sec-head h2{margin:.34em 0 .5em}
 
@@ -251,7 +262,7 @@ nav.solid .brand img{height:44px}
   transform:scaleX(0);transform-origin:left;transition:transform 2.1s cubic-bezier(.16,1,.3,1) .2s;
   box-shadow:0 0 16px color-mix(in oklch,var(--accent) 45%,transparent)}
 .chain.in::after{transform:scaleX(1)}
-.chain-c{background:color-mix(in oklch,var(--bg) 92%,transparent);padding:34px clamp(18px,2vw,30px);position:relative;overflow:hidden}
+.chain-c{background:linear-gradient(180deg,color-mix(in oklch,var(--bg2) 82%,transparent),color-mix(in oklch,var(--bg) 88%,transparent));box-shadow:inset 0 1px 0 color-mix(in oklch,var(--ink) 8%,transparent);padding:34px clamp(18px,2vw,30px);position:relative;overflow:hidden}
 .chain-c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--accent);
   transform:scaleY(0);transform-origin:top;transition:transform .9s cubic-bezier(.16,1,.3,1)}
 .chain-c.in::before{transform:scaleY(1)}
@@ -261,7 +272,8 @@ nav.solid .brand img{height:44px}
 @media (max-width:900px){.chain{grid-template-columns:1fr}}
 
 .pull{margin-top:64px;padding:clamp(30px,4vw,54px);border:1px solid color-mix(in oklch,var(--accent) 40%,transparent);
-  background:color-mix(in oklch,var(--deep) 26%,transparent);position:relative}
+  background:linear-gradient(150deg,color-mix(in oklch,var(--deep) 44%,transparent),color-mix(in oklch,var(--deep) 14%,transparent) 62%,transparent);
+  box-shadow:inset 0 1px 0 color-mix(in oklch,var(--accent) 22%,transparent);position:relative}
 .pull p{font-family:var(--disp);font-size:clamp(1.32rem,2.5vw,2.15rem);line-height:1.24;letter-spacing:-.02em;max-width:26ch}
 
 /* ---------- editorial split rows ---------- */
@@ -308,7 +320,7 @@ nav.solid .brand img{height:44px}
   mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
 .rev-track{display:flex;align-items:flex-start;gap:22px;will-change:transform;padding:6px 0 8px;cursor:grab;touch-action:pan-y}
 .rev-track.grabbing{cursor:grabbing}
-.rev-card{flex:0 0 clamp(290px,30vw,420px);background:var(--bg);border:1px solid color-mix(in oklch,var(--ink) 13%,transparent);
+.rev-card{flex:0 0 clamp(290px,30vw,420px);background:linear-gradient(180deg,color-mix(in oklch,var(--bg2) 86%,transparent),color-mix(in oklch,var(--bg) 94%,transparent));box-shadow:inset 0 1px 0 color-mix(in oklch,var(--ink) 8%,transparent),0 18px 40px -28px oklch(0.06 0.02 166);border:1px solid color-mix(in oklch,var(--ink) 13%,transparent);
   padding:30px 30px 26px;display:flex;flex-direction:column;gap:16px;user-select:none;position:relative;
   transition:border-color .5s cubic-bezier(.16,1,.3,1),transform .6s cubic-bezier(.16,1,.3,1)}
 .rev-card:hover{border-color:color-mix(in oklch,var(--accent) 55%,transparent);transform:translateY(-4px)}
@@ -326,7 +338,7 @@ nav.solid .brand img{height:44px}
 .rev-drag svg{width:22px;height:22px;color:var(--accent-hi)}
 
 /* ---------- light block ---------- */
-.light{background:var(--bone);color:var(--bone-ink);--accent:oklch(0.415 0.085 168);--accent-hi:oklch(0.500 0.090 168)}
+.light{background:var(--bone);color:var(--bone-ink);--accent:oklch(0.406 0.086 165);--accent-hi:oklch(0.490 0.090 165)}
 .light h1,.light h2,.light h3,.light h4{color:var(--bone-ink)}
 .light .lede,.light .small{color:var(--bone-muted)}
 .light em{color:var(--accent)}
@@ -363,7 +375,7 @@ nav.solid .brand img{height:44px}
 .gtee{background:linear-gradient(168deg,color-mix(in oklch,var(--deep) 62%,var(--bg)),var(--bg) 72%)}
 .gtee-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-top:64px;
   background:color-mix(in oklch,var(--ink) 15%,transparent);border:1px solid color-mix(in oklch,var(--ink) 15%,transparent)}
-.gtee-c{background:color-mix(in oklch,var(--bg) 82%,transparent);padding:clamp(28px,3.2vw,44px)}
+.gtee-c{background:linear-gradient(180deg,color-mix(in oklch,var(--bg2) 74%,transparent),color-mix(in oklch,var(--bg) 86%,transparent));box-shadow:inset 0 1px 0 color-mix(in oklch,var(--ink) 9%,transparent);padding:clamp(28px,3.2vw,44px)}
 .gtee-c .n{font-family:var(--disp);font-size:2.6rem;font-weight:300;color:var(--accent-hi);line-height:1;letter-spacing:-.04em}
 .gtee-c h3{font-size:1.28rem;margin:.68em 0 .5em;line-height:1.22}
 .gtee-c p{font-size:.94rem;color:var(--muted);line-height:1.6}
@@ -391,7 +403,7 @@ nav.solid .brand img{height:44px}
 .cta-note{margin-top:30px;font-size:.82rem;color:var(--muted)}
 
 /* ---------- footer ---------- */
-footer{background:oklch(0.122 0.020 168);border-top:1px solid color-mix(in oklch,var(--ink) 12%,transparent);min-height:260px}
+footer{background:oklch(0.142 0.027 166);border-top:1px solid color-mix(in oklch,var(--ink) 12%,transparent);min-height:260px}
 .f-in{display:grid;grid-template-columns:1.5fr 1fr 1fr 1.2fr;gap:44px;padding-block:70px 40px}
 .f-logo{height:64px;width:auto;margin-bottom:20px}
 .f-col h5{font-family:var(--sans);font-size:.7rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-hi);margin:0 0 18px}
@@ -414,7 +426,7 @@ footer{background:oklch(0.122 0.020 168);border-top:1px solid color-mix(in oklch
 .band{position:relative;height:clamp(340px,58vh,620px);overflow:hidden;isolation:isolate}
 .band img{position:absolute;inset:0;width:100%;height:128%;object-fit:cover;object-position:50% 40%;will-change:transform}
 .band::after{content:"";position:absolute;inset:0;z-index:1;
-  background:linear-gradient(180deg,var(--bg) 0%,transparent 24%,color-mix(in oklch,var(--bg) 26%,transparent) 54%,color-mix(in oklch,var(--bg) 78%,transparent) 82%,var(--bone) 100%)}
+  background:linear-gradient(180deg,var(--bg) 0%,transparent 24%,color-mix(in oklch,var(--scrim) 28%,transparent) 54%,color-mix(in oklch,var(--scrim) 62%,transparent) 80%,var(--bone) 100%)}
 .band-tx{position:absolute;left:0;right:0;bottom:clamp(30px,5vw,64px);z-index:2}
 .band-tx .eyebrow{margin-bottom:.9em}
 .band-tx p:last-child{font-family:var(--disp);font-size:clamp(1.4rem,3.1vw,2.7rem);line-height:1.16;letter-spacing:-.025em;max-width:26ch}
