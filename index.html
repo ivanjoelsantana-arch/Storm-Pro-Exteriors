@@ -90,9 +90,7 @@ body::before{content:"";position:fixed;inset:-20%;z-index:-2;pointer-events:none
     radial-gradient(54% 52% at 58% 84%,color-mix(in oklch,var(--deep) 74%,transparent),transparent 72%),
     radial-gradient(30% 26% at 80% 58%,color-mix(in oklch,var(--accent) 22%,transparent),transparent 76%),
     radial-gradient(34% 30% at 24% 62%,color-mix(in oklch,var(--green) 40%,transparent),transparent 74%);
-  filter:blur(72px);opacity:.62;animation:mesh 34s ease-in-out infinite}
-@keyframes mesh{0%,100%{transform:translate3d(0,0,0) scale(1)}33%{transform:translate3d(2.5%,-2%,0) scale(1.06)}66%{transform:translate3d(-2%,2.5%,0) scale(1.03)}}
-@media (prefers-reduced-motion:reduce){body::before{animation:none}}
+  opacity:.62}
 
 figure,ul,ol,blockquote,dl{margin:0;padding:0}
 ul,ol{list-style:none}
@@ -433,6 +431,27 @@ footer{background:oklch(0.142 0.027 166);border-top:1px solid color-mix(in oklch
 .band-tx{position:absolute;left:0;right:0;bottom:clamp(30px,5vw,64px);z-index:2}
 .band-tx .eyebrow{margin-bottom:.9em}
 .band-tx p:last-child{font-family:var(--disp);font-size:clamp(1.4rem,3.1vw,2.7rem);line-height:1.16;letter-spacing:-.025em;max-width:26ch}
+
+/* ---------- performance: the scroll-cost layers ----------
+   Two full-viewport mix-blend-mode layers (.grain overlay, .grade multiply) plus
+   backdrop-filter on the nav forced the browser to re-composite the whole screen on
+   every scroll frame, which starved rAF and made both the scroll and the carousel
+   stutter. Replaced with flat, non-blended, non-animated equivalents. */
+.grain{display:none!important}
+.grade{position:fixed;inset:0;z-index:9989;pointer-events:none;mix-blend-mode:normal!important;
+  background:radial-gradient(140% 120% at 50% 34%,transparent 62%,color-mix(in oklch,var(--scrim) 26%,transparent) 100%)}
+nav.solid{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  background:color-mix(in oklch,var(--bg) 96%,transparent)}
+.strip{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+/* animating a transform on a blurred layer re-rasterises it every frame */
+.footfx .aurora{animation:none!important;filter:blur(44px)}
+
+/* off-screen animations are paused: 20 footer dots and the hero drift were
+   compositing every frame regardless of whether either was on screen */
+.footfx .dot{animation-play-state:paused}
+footer.live .footfx .dot{animation-play-state:running}
+.hero-media img{animation-play-state:paused}
+.hero.live .hero-media img{animation-play-state:running}
 
 /* ---------- sticky mobile call bar ---------- */
 .callbar{position:fixed;left:0;right:0;bottom:0;z-index:880;display:none;gap:1px;
@@ -1013,6 +1032,18 @@ footer{background:oklch(0.142 0.027 166);border-top:1px solid color-mix(in oklch
 <script>
 document.getElementById('yr').textContent = new Date().getFullYear();
 
+/* ---------------- run animations only while their section is on screen ---------------- */
+(function(){
+  if(!('IntersectionObserver' in window)) {
+    document.querySelectorAll('footer,.hero').forEach(function(n){n.classList.add('live');});
+    return;
+  }
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){ e.target.classList.toggle('live', e.isIntersecting); });
+  },{rootMargin:'120px 0px'});
+  document.querySelectorAll('footer,.hero').forEach(function(n){ io.observe(n); });
+})();
+
 /* ---------------- nav + call bar ---------------- */
 (function(){
   var nav=document.getElementById('nav'), bar=document.getElementById('callbar');
@@ -1024,26 +1055,42 @@ document.getElementById('yr').textContent = new Date().getFullYear();
   addEventListener('scroll',onScroll,{passive:true}); onScroll();
 })();
 
-/* ---------------- image frames: gentle internal parallax ---------------- */
+/* ---------------- parallax: one rAF, offsets cached, no layout reads ----------------
+   This was two separate scroll handlers, each calling getBoundingClientRect() on every
+   element on every frame, which forces a synchronous layout mid-scroll. Offsets are now
+   measured once, so scrolling itself does no layout work. */
 (function(){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  var figs=[].slice.call(document.querySelectorAll('.split-media'));
-  if(!figs.length) return;
-  var ticking=false;
-  function upd(){
-    var vh=innerHeight;
-    for(var i=0;i<figs.length;i++){
-      var f=figs[i], r=f.getBoundingClientRect();
-      if(r.bottom<-120||r.top>vh+120) continue;
-      var img=f.firstElementChild;
-      var p=(vh-r.top)/(vh+r.height);                       // 0 entering -> 1 leaving
-      if(img) img.style.setProperty('--py',(-(p-0.5)*6.5).toFixed(2)+'%');
+  var band=document.querySelector('.band');
+  var items=[], ticking=false;
+  function measure(){
+    items=[];
+    [].forEach.call(document.querySelectorAll('.split-media'),function(f){
+      var r=f.getBoundingClientRect();
+      items.push({img:f.firstElementChild,top:r.top+window.scrollY,h:r.height,band:false});
+    });
+    if(band){
+      var b=band.getBoundingClientRect();
+      items.push({img:band.querySelector('img'),top:b.top+window.scrollY,h:b.height,band:true});
     }
-    ticking=false;
   }
-  addEventListener('scroll',function(){if(!ticking){ticking=true;requestAnimationFrame(upd);}},{passive:true});
-  addEventListener('resize',upd);
-  upd(); addEventListener('load',upd);
+  function upd(){
+    ticking=false;
+    var vh=innerHeight, y=window.scrollY;
+    for(var i=0;i<items.length;i++){
+      var it=items[i]; if(!it.img) continue;
+      var rel=it.top-y;
+      if(rel>vh+140 || rel+it.h<-140) continue;
+      var pr=(vh-rel)/(vh+it.h);
+      if(it.band) it.img.style.transform='translate3d(0,'+(-(pr-0.5)*14).toFixed(2)+'%,0)';
+      else it.img.style.setProperty('--py',(-(pr-0.5)*6.5).toFixed(2)+'%');
+    }
+  }
+  function onScroll(){ if(!ticking){ ticking=true; requestAnimationFrame(upd); } }
+  addEventListener('scroll',onScroll,{passive:true});
+  addEventListener('resize',function(){ measure(); onScroll(); });
+  addEventListener('load',function(){ measure(); onScroll(); });
+  measure(); upd();
 })();
 
 /* ---------------- hero load choreography ---------------- */
@@ -1063,21 +1110,6 @@ document.getElementById('yr').textContent = new Date().getFullYear();
   else addEventListener('load',function(){setTimeout(play,120);});
 })();
 
-/* ---------------- full bleed band parallax ---------------- */
-(function(){
-  var band=document.querySelector('.band'), img=band&&band.querySelector('img');
-  if(!img || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  var ticking=false;
-  function upd(){
-    var r=band.getBoundingClientRect(), vh=innerHeight;
-    if(r.bottom<0||r.top>vh){ticking=false;return;}
-    var p=(vh-r.top)/(vh+r.height);           // 0 entering -> 1 leaving
-    img.style.transform='translate3d(0,'+(-(p-0.5)*14).toFixed(2)+'%,0)';
-    ticking=false;
-  }
-  addEventListener('scroll',function(){if(!ticking){ticking=true;requestAnimationFrame(upd);}},{passive:true});
-  addEventListener('resize',upd); upd();
-})();
 
 /* ---------------- accordions (objections + faq) ---------------- */
 (function(){
@@ -1155,6 +1187,7 @@ document.getElementById('yr').textContent = new Date().getFullYear();
   }
 
   function frame(){
+    if(!onScreen){ running=false; return; }
     if(!dragging){
       if(!paused && !reduce) x-=speed;
       if(Math.abs(vel)>0.05){ x+=vel; vel*=0.925; } else vel=0;
@@ -1167,6 +1200,17 @@ document.getElementById('yr').textContent = new Date().getFullYear();
   // Pause on hover, but only for a real mouse. A touch tap synthesises mouseenter and
   // never fires a matching mouseleave, which used to leave the track paused forever.
   var hovering=false;
+  // the drift loop used to run at 60fps for the whole life of the page, even with the
+  // reviews thousands of pixels off screen. It now parks itself when out of view.
+  var onScreen=true, running=false;
+  if('IntersectionObserver' in window){
+    onScreen=false;
+    new IntersectionObserver(function(es){
+      onScreen=es[0].isIntersecting;
+      if(onScreen && !running){ running=true; requestAnimationFrame(frame); }
+    },{rootMargin:'300px 0px'}).observe(view);
+  }
+
   view.addEventListener('pointerenter',function(e){ if(e.pointerType==='mouse'){hovering=true;paused=true;} });
   view.addEventListener('pointerleave',function(e){ if(e.pointerType==='mouse'){hovering=false;paused=false;} });
 
@@ -1205,7 +1249,7 @@ document.getElementById('yr').textContent = new Date().getFullYear();
   track.addEventListener('dragstart',function(e){e.preventDefault();});
 
   addEventListener('resize',measure);
-  measure(); requestAnimationFrame(frame);
+  measure(); running=true; requestAnimationFrame(frame);
   if(document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
   addEventListener('load',measure);
 })();
